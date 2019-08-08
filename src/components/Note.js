@@ -10,7 +10,7 @@ class Note extends React.Component {
   date = new Date(this.props.modified).toLocaleDateString();
   
   render() {
-    console.log(this.context)
+    // console.log(this.context)
     return (
       <li className="note-list-item">
         <div className='note-box'>

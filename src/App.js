@@ -14,11 +14,12 @@ class App extends Component {
   state = {
     folders: [],
     notes: [],
-    loading: true
+    loading: true,
+    addingFolder: ''
   };
   
   componentDidMount() {
-    fetch('http://localhost:9090/db')
+    fetch('http://localhost:8080/db')
       .then(res => res.json())
       .then(resJson => {
         this.setState({
@@ -29,9 +30,26 @@ class App extends Component {
       });
   }
 
+  setAddingFolder = (value) => {
+    this.setState ({
+      addingFolder: value,
+    })
+  }
+
+  handleCreateFolder = () => {
+    console.log('adding new folder to api')
+    fetch('http://localhost:8080/folders/', {
+      method: 'Post',
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({name: this.state.addingFolder})
+    })
+  }
+
   handleDelete = (id) => {
     console.log('deleting '+id)
-    fetch(`http://localhost:9090/notes/${id}`, {
+    fetch(`http://localhost:8080/notes/${id}`, {
       method: 'DELETE',
       headers: {
         'content-type': 'application/json'
@@ -55,6 +73,9 @@ class App extends Component {
         <UserContext.Provider value ={{
           folders: folders,
           notes: notes,
+          addingFolder: this.state.addingFolder,
+          setAddingFolder: this.setAddingFolder,
+          handleCreateFolder: this.handleCreateFolder,
         }}>
           <Switch>
             <Route
@@ -69,6 +90,7 @@ class App extends Component {
                   <FolderList />
               )}
             />
+      
           </Switch>
         </UserContext.Provider>
         </div>
