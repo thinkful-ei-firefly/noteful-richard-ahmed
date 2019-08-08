@@ -35,7 +35,11 @@ class NoteList extends React.Component {
         <UserContext.Provider value={{
           setAddingNote: this.context.setAddingNote,
           addingNote: this.context.addingNote,
-          handleCreateNote: this.context.handleCreateNote
+          handleCreateNote: this.context.handleCreateNote,
+          match: this.context.match,
+          setFolderId: this.context.setFolderId,
+          currentNoteContent: this.context.currentNoteContent,
+          setCurrentNoteContent: this.context.setCurrentNoteContent
         }}>
         <AddNote />
       </UserContext.Provider>

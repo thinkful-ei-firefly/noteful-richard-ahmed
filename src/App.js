@@ -17,20 +17,34 @@ class App extends Component {
     loading: true,
     addingFolder: '',
     addingNote:'',
+    currentFolderId: false,
+    currentNoteContent: '',
   };
   
   componentDidMount() {
     this.updateState()
   }
 
-  setAddingFolder = (value) => {
+  setAddingFolder = (text) => {
     this.setState ({
-      addingFolder: value,
+      addingFolder: text,
     })
   }
-  setAddingNote = (value) => {
+  setAddingNote = (text) => {
     this.setState({
-      addingNote: value,
+      addingNote: text,
+    })
+  }
+
+  setFolderId = (text) => {
+    this.setState({
+      currentFolderId: text,
+    })
+  }
+
+  setCurrentNoteContent = (text) => {
+    this.setState({
+      currentNoteContent: text,
     })
   }
 
@@ -41,7 +55,8 @@ class App extends Component {
         this.setState({
           folders: resJson.folders,
           notes: resJson.notes,
-          loading: false
+          loading: false,
+          currentFolderId: false,
         })
       });
   }
@@ -60,13 +75,18 @@ class App extends Component {
 
   handleCreateNote = (e) => {
     e.preventDefault()
+    const date = new Date();
+    const timestamp = date.getTime();
     fetch('http://localhost:8080/notes/', {
         method: 'Post',
         headers: {
           'content-type': 'application/json'
         },
         body: JSON.stringify({
-          name: this.state.addingNote
+          name: this.state.addingNote,
+          modified: timestamp,
+          folderId: this.state.currentFolderId,
+          content: this.state.currentNoteContent
         })
       })
       .then(() => this.updateState())
@@ -131,7 +151,10 @@ class App extends Component {
                   handleDelete: this.handleDelete,
                   setAddingNote: this.setAddingNote,
                   addingNote: this.addingNote,
-                  handleCreateNote: this.handleCreateNote
+                  handleCreateNote: this.handleCreateNote,
+                  setFolderId: this.setFolderId,
+                  currentNoteContent: this.state.currentNoteContent,
+                  setCurrentNoteContent: this.state.setCurrentNoteContent
                 }}> 
                   <NoteList />
                 </UserContext.Provider>
@@ -144,9 +167,15 @@ class App extends Component {
                 <UserContext.Provider value ={{
                   notes: notes,
                   match: match,
-                  handleDelete: this.handleDelete
+                  handleDelete: this.handleDelete,
+                  setAddingNote: this.setAddingNote,
+                  addingNote: this.addingNote,
+                  handleCreateNote: this.handleCreateNote,
+                  setFolderId: this.setFolderId,
+                  currentNoteContent: this.state.currentNoteContent,
+                  setCurrentNoteContent: this.state.setCurrentNoteContent
                 }}> 
-                  <NoteList />
+                  <NoteList match ={match} />
                 </UserContext.Provider>
               }
             />
