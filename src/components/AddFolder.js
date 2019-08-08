@@ -7,13 +7,13 @@ export default class AddFolder extends React.Component {
 
     render () {
         return(
-            <form className="addFolder">
+            <form className="addFolder" onSubmit={this.context.handleCreateFolder}>
                 <label htmlFor="folderName">Folder Name:
                     <input id="folderName" type="text" 
                     value={this.context.addingFolder} 
                     onChange={e => this.context.setAddingFolder(e.target.value)} />
                 </label>
-                <button onClick={this.context.handleCreateFolder()} >Add Folder</button>
+                <button type ="submit"  >Add Folder</button>
             </form>
         );
     }

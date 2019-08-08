@@ -2,6 +2,7 @@ import React from "react";
 import Note from "./Note";
 import "./note-list.css";
 import UserContext from './UserContext';
+import AddNote from './AddNote'
 
 class NoteList extends React.Component {
   static contextType = UserContext;
@@ -20,16 +21,25 @@ class NoteList extends React.Component {
   
   render () {
     return (
-      <ul>
-        {this.findNotes().map(note => (
-          <Note
-            name={note.name}
-            id={note.id}
-            key={note.id}
-            modified={note.modified}
-          />
-        ))}
-      </ul>
+      <div>
+        <ul>
+          {this.findNotes().map(note => (
+            <Note
+              name={note.name}
+              id={note.id}
+              key={note.id}
+              modified={note.modified}
+            />
+          ))}
+        </ul>
+        <UserContext.Provider value={{
+          setAddingNote: this.context.setAddingNote,
+          addingNote: this.context.addingNote,
+          handleCreateNote: this.context.handleCreateNote
+        }}>
+        <AddNote />
+      </UserContext.Provider>
+      </div>
     );
   }
   

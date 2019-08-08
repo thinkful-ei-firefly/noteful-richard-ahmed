@@ -15,10 +15,26 @@ class App extends Component {
     folders: [],
     notes: [],
     loading: true,
-    addingFolder: ''
+    addingFolder: '',
+    addingNote:'',
   };
   
   componentDidMount() {
+    this.updateState()
+  }
+
+  setAddingFolder = (value) => {
+    this.setState ({
+      addingFolder: value,
+    })
+  }
+  setAddingNote = (value) => {
+    this.setState({
+      addingNote: value,
+    })
+  }
+
+  updateState() {
     fetch('http://localhost:8080/db')
       .then(res => res.json())
       .then(resJson => {
@@ -29,15 +45,9 @@ class App extends Component {
         })
       });
   }
+  
 
-  setAddingFolder = (value) => {
-    this.setState ({
-      addingFolder: value,
-    })
-  }
-
-  handleCreateFolder = () => {
-    console.log('adding new folder to api')
+  handleCreateFolder = (e) => { e.preventDefault() 
     fetch('http://localhost:8080/folders/', {
       method: 'Post',
       headers: {
@@ -45,6 +55,21 @@ class App extends Component {
       },
       body: JSON.stringify({name: this.state.addingFolder})
     })
+    .then(()=> this.updateState())
+  }
+
+  handleCreateNote = (e) => {
+    e.preventDefault()
+    fetch('http://localhost:8080/notes/', {
+        method: 'Post',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: this.state.addingNote
+        })
+      })
+      .then(() => this.updateState())
   }
 
   handleDelete = (id) => {
@@ -103,7 +128,10 @@ class App extends Component {
                 <UserContext.Provider value ={{
                   notes: notes,
                   match: match,
-                  handleDelete: this.handleDelete
+                  handleDelete: this.handleDelete,
+                  setAddingNote: this.setAddingNote,
+                  addingNote: this.addingNote,
+                  handleCreateNote: this.handleCreateNote
                 }}> 
                   <NoteList />
                 </UserContext.Provider>
