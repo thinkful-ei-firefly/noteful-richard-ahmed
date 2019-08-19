@@ -1,15 +1,17 @@
-.folder-list {
+/* .folder-list {
   padding: 0;
 
   margin: 0;
-}
+} */
 
 .folder-item {
   height: 4rem;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   display: flex;
   justify-content: center;
   align-items: center;
+  background: linear-gradient(to bottom, #7399b8, #02084f);
+  border-radius: 0px 0px 10px 0px;
 }
 
 .folder-item__link {

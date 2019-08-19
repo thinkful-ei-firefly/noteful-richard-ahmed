@@ -1,23 +1,28 @@
-import React from "react";
+import React, { useContext } from "react";
+import AppContext from "../context/AppContext";
 import Note from "./Note";
-import UserContext from './UserContext';
+import PropTypes from "prop-types";
 
- class NotePage extends React.Component{
-  static contextType = UserContext;
+const NotePage = props => {
+  const { notes } = useContext(AppContext);
+  const noteArr = notes.filter(note => note.id === props.match.params.notesId);
+  const note = noteArr[0];
 
-  render () {
-    const noteArr = this.context.notes.filter(
-      note => note.id === this.context.match.params.notesId
-    );
-    const note = noteArr[0];
-    return !note ? <h2>No note with this ID</h2> :  (
-      <div>
-        <Note {...note} />
-        <p>{note.content}</p>
-      </div>
-    );
-  }
-  
+  return (
+    <div>
+      <Note {...note} />
+      <p>{note.content}</p>
+    </div>
+  );
 };
-
+NotePage.propTypes = {
+  notes: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      folderId: PropTypes.string.isRequired,
+      content: PropTypes.string
+    })
+  )
+};
 export default NotePage;

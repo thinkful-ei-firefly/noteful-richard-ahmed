@@ -1,0 +1,9 @@
+.folder-list {
+    margin:0%;
+    overflow: scroll;
+}
+
+#nav {
+    overflow: scroll;
+    /* position: absolute; */
+}

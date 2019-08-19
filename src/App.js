@@ -1,202 +1,161 @@
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, withRouter } from "react-router-dom";
 import Header from "./components/Header";
 import FolderList from "./components/FolderList";
 import NoteList from "./components/NoteList";
 import NotePage from "./components/NotePage";
 import NoteSidebar from "./components/NoteSidebar";
-import UserContext from "./components/UserContext";
+import AppContext from "./context/AppContext";
+import AddFolder from "./components/AddFolder";
+import AddNote from "./components/AddNote";
+import ErrorBoundary from "./ErrorBoundary";
 
 import "./App.css";
 
 class App extends Component {
-
   state = {
     folders: [],
     notes: [],
-    loading: true,
-    addingFolder: '',
-    addingNote:'',
-    currentFolderId: false,
-    currentNoteContent: '',
+    error: null,
+    loading:false
   };
-  
-  componentDidMount() {
-    this.updateState()
-  }
 
-  setAddingFolder = (text) => {
-    this.setState ({
-      addingFolder: text,
-    })
-  }
-  setAddingNote = (text) => {
-    this.setState({
-      addingNote: text,
-    })
-  }
-
-  setFolderId = (text) => {
-    this.setState({
-      currentFolderId: text,
-    })
-  }
-
-  setCurrentNoteContent = (text) => {
-    this.setState({
-      currentNoteContent: text,
-    })
-  }
-
-  updateState() {
-    fetch('http://localhost:8080/db')
-      .then(res => res.json())
-      .then(resJson => {
-        this.setState({
-          folders: resJson.folders,
-          notes: resJson.notes,
-          loading: false,
-          currentFolderId: false,
-        })
+  deleteNote = async id => {
+    try {
+      await fetch(`http://localhost:9090/notes/${id}`, { method: "DELETE" });
+      this.setState({ notes: this.state.notes.filter(note => note.id !== id) });
+      this.props.history.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  addFolder = async nameObj => {
+    try {
+      const res = await fetch(`http://localhost:9090/folders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(nameObj)
       });
-  }
-  
+      const resJson = await res.json();
+      this.setState({ folders: [...this.state.folders, resJson] });
 
-  handleCreateFolder = (e) => { e.preventDefault() 
-    fetch('http://localhost:8080/folders/', {
-      method: 'Post',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({name: this.state.addingFolder})
-    })
-    .then(()=> this.updateState())
-  }
+      this.props.history.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  addNote = async noteData => {
+    try {
+      const res = await fetch(`http://localhost:9090/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(noteData)
+      });
+      const resJson = await res.json();
+      this.setState({ notes: [...this.state.notes, resJson] });
 
-  handleCreateNote = (e) => {
-    e.preventDefault()
-    const date = new Date();
-    const timestamp = date.getTime();
-    fetch('http://localhost:8080/notes/', {
-        method: 'Post',
-        headers: {
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: this.state.addingNote,
-          modified: timestamp,
-          folderId: this.state.currentFolderId,
-          content: this.state.currentNoteContent
+      this.props.history.push("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  componentDidMount() {
+    this.setState ({loading:true})
+    setTimeout(()=>{
+      console.log("didMount")
+
+      Promise.all([
+          fetch("http://localhost:9090/folders"),
+          fetch("http://localhost:9090/notes")
+        ])
+        .then(responses => {
+          responses.forEach(response => {
+            if (!response.ok) {
+              Promise.reject("sorry there was an issue");
+            }
+          });
+          return responses;
         })
-      })
-      .then(() => this.updateState())
+        .then(responses => Promise.all(responses.map(res => res.json())))
+        .then(responses =>
+          this.setState({
+            loading: false,
+            folders: responses[0],
+            notes: responses[1]
+          })
+        )
+        .catch(error => {
+          this.setState({loading:false})
+          console.log(error);
+        });
+    },1000)
+    
   }
-
-  handleDelete = (id) => {
-    console.log('deleting '+id)
-    fetch(`http://localhost:8080/notes/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'content-type': 'application/json'
-      }
-    })
-      .then(() => {
-        this.setState({
-          notes: this.state.notes.filter(note => note.id !== id)
-        })
-      })
-  }
-  
 
   render() {
-    const { folders, notes, loading } = this.state;
-    if (loading) return <div>loading</div>
+    const { folders, notes } = this.state;
+    
+    if (this.state.loading){
+      return (<h1 style={{color:"black",textAlign:"center",fontSize:"6rem"}}>loading...</h1>)
+    } else {
     return (
       <div className="App">
-        <Header />
-        <div className="sidebar">
-        <UserContext.Provider value ={{
-          folders: folders,
-          notes: notes,
-          addingFolder: this.state.addingFolder,
-          setAddingFolder: this.setAddingFolder,
-          handleCreateFolder: this.handleCreateFolder,
-        }}>
-          <Switch>
-            <Route
-              exact
-              path="/notes/:noteId"
-              render={({ match }) => (
-                  <NoteSidebar match={match}/>
-              )}
-            />
-            <Route
-              render={() => (
-                  <FolderList />
-              )}
-            />
-      
-          </Switch>
-        </UserContext.Provider>
-        </div>
+        <AppContext.Provider
+          value={{ folders, notes, deleteNote: this.deleteNote }}
+        >
+          
+          < Header / >
         <div className="main">
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={({match}) =>
-                <UserContext.Provider value ={{
-                  notes: notes,
-                  match: match,
-                  handleDelete: this.handleDelete,
-                  setAddingNote: this.setAddingNote,
-                  addingNote: this.addingNote,
-                  handleCreateNote: this.handleCreateNote,
-                  setFolderId: this.setFolderId,
-                  currentNoteContent: this.state.currentNoteContent,
-                  setCurrentNoteContent: this.state.setCurrentNoteContent
-                }}> 
-                  <NoteList />
-                </UserContext.Provider>
-              }  
-            />
-            <Route
-              exact
-              path="/folders/:folderId"
-              render={({match}) => 
-                <UserContext.Provider value ={{
-                  notes: notes,
-                  match: match,
-                  handleDelete: this.handleDelete,
-                  setAddingNote: this.setAddingNote,
-                  addingNote: this.addingNote,
-                  handleCreateNote: this.handleCreateNote,
-                  setFolderId: this.setFolderId,
-                  currentNoteContent: this.state.currentNoteContent,
-                  setCurrentNoteContent: this.state.setCurrentNoteContent
-                }}> 
-                  <NoteList match ={match} />
-                </UserContext.Provider>
-              }
-            />
-            <Route
-              exact
-              path="/notes/:notesId"
-              render={({match}) => 
-                <UserContext.Provider value ={{
-                  notes: notes,
-                  match: match,
-                  handleDelete: this.handleDelete
-                }}> 
-                  <NotePage />
-                </UserContext.Provider>
-              }
-            />
-          </Switch>
-        </div>
+          <div className="sidebar">
+            <Switch>
+              <Route
+                exact
+                path="/notes/:noteId"
+                render={props => <NoteSidebar {...props} />}
+              />
+              <Route render={props => <FolderList {...props} />} />
+            </Switch>
+          </div>
+          <div className="section" >
+            <Switch>
+              <Route exact path="/" render={props => <NoteList {...props} />} />
+              <Route
+                exact
+                path="/folders/:folderId"
+                render={props => <NoteList {...props} />}
+              />
+              <Route
+                exact
+                path="/notes/:notesId"
+                render={props => <NotePage {...props} />}
+              />
+              <ErrorBoundary>
+                <Route
+                  exact
+                  path="/add-folder"
+                  render={props => (
+                    <AddFolder {...props} addFolder={this.addFolder} />
+                  )}
+                />
+                <Route
+                  exact
+                  path="/add-note"
+                  render={props => (
+                    <AddNote
+                      {...props}
+                      folders={this.state.folders}
+                      addNote={this.addNote}
+                    />
+                  )}
+                />
+              </ErrorBoundary>
+            </Switch>
+          </div>
+          </div>
+        </AppContext.Provider>
       </div>
-    );
+    );}
   }
 }
 
-export default App;
+export default withRouter(App);

@@ -1,23 +1,57 @@
 .App {
   text-align: center;
 }
+button{
+
+  padding: 0.2rem;
+  /* display:flex; */
+  /* width: 33%; */
+  /* text-align: center; */
+  /* justify-content: center; */
+  /* margin-left: auto; */
+  height: 2.5rem;
+  /* width: 50%; */
+  /* border: #777 1px solid; */
+  background: linear-gradient(to top, #7f90ee, #fbfbfc, #979bcecb);
+  
+  margin: 2%;
+  border-radius: 10%;
+  
+}
 
 ul {
   list-style: none;
-}
-
-.sidebar {
-  position: fixed;
-  left: 0;
-  top: 6rem;
-  width: 35%;
-  background-color: #777777;
-  height: 100vh;
+  padding: 0%;
+  max-height: 70vh; 
+  overflow-y: scroll;
 }
 
 .main {
-  margin-left: 33%;
-  margin-top: 7rem;
-  height: 100vh;
-  padding: 0 3rem;
+  /* margin-left: 33%; */
+  /* margin-top: 7rem; */
+  margin: 0%;
+  padding: 0px;
+  display: flex;
+  /* height: 100vh; */
+  /* padding: 0 3rem; */
+  /* justify-content: space-between; */
+}
+
+
+.sidebar {
+  /* position: fixed; */
+  /* left: 0; */
+  padding-top: 5rem;
+  width: 35%;
+  
+  /* height: 100vh; */
+  margin:0px;
+}
+
+
+.section {
+  padding-top: 5rem;
+  width: 100%;
+  /* margin-left:auto; */
+  padding: 5rem 5%;
 }

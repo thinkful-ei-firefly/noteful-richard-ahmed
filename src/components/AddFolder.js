@@ -1,20 +1,49 @@
-import React from 'react';
-import UserContext from './UserContext';
+import React, { Component } from "react";
+import "./add-folder.css";
 
-export default class AddFolder extends React.Component {
+export default class AddFolder extends Component {
+  state = {
+    name: "",
+    error: null
+  };
 
-    static contextType = UserContext;
-
-    render () {
-        return(
-            <form className="addFolder" onSubmit={this.context.handleCreateFolder}>
-                <label htmlFor="folderName">Folder Name:
-                    <input id="folderName" type="text" 
-                    value={this.context.addingFolder} 
-                    onChange={e => this.context.setAddingFolder(e.target.value)} />
-                </label>
-                <button type ="submit"  >Add Folder</button>
-            </form>
-        );
+  onChange = e => {
+    this.setState({ name: e.target.value });
+  };
+  handleSubmit = e => {
+    e.preventDefault();
+    const { name } = this.state;
+    if (!name) {
+      this.setState({
+        error:
+          "Name is Required"
+      });
+    } else {
+      this.props.addFolder({ name });
     }
+  };
+  render() {
+    return (
+      < div className = "add-form" >
+        <h2>Add Folder</h2>
+        <form onSubmit={this.handleSubmit} className="submit-btn" >
+          <label>
+            
+            <input
+              type="text"
+              name="name"
+              value={this.state.name}
+              onChange={this.onChange}
+              
+              placeholder = "Folder Name"
+            />
+          </label>
+          {this.state.error && (
+            <p style={{ color: "red" }}>{this.state.error}</p>
+          )}
+          <input style={{ margin: "5%" }} type="submit" value="Submit" />
+        </form>
+      </div>
+    );
+  }
 }

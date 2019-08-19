@@ -1,52 +1,49 @@
-import React from "react";
+import React, { useContext } from "react";
 import Note from "./Note";
+import AppContext from "../context/AppContext";
+import { Link } from "react-router-dom";
 import "./note-list.css";
-import UserContext from './UserContext';
-import AddNote from './AddNote'
+import PropTypes from "prop-types";
 
-class NoteList extends React.Component {
-  static contextType = UserContext;
-  
-  findNotes = () => {
-    let notes
-    if (this.context.match.params.folderId) {
-      notes = this.context.notes.filter(
-        note => note.folderId === this.context.match.params.folderId
-      );
-    } else {
-      notes = this.context.notes;
-    }
-    return notes
-  }
-  
-  render () {
-    return (
-      <div>
-        <ul>
-          {this.findNotes().map(note => (
-            <Note
-              name={note.name}
-              id={note.id}
-              key={note.id}
-              modified={note.modified}
-            />
-          ))}
-        </ul>
-        <UserContext.Provider value={{
-          setAddingNote: this.context.setAddingNote,
-          addingNote: this.context.addingNote,
-          handleCreateNote: this.context.handleCreateNote,
-          match: this.context.match,
-          setFolderId: this.context.setFolderId,
-          currentNoteContent: this.context.currentNoteContent,
-          setCurrentNoteContent: this.context.setCurrentNoteContent
-        }}>
-        <AddNote />
-      </UserContext.Provider>
-      </div>
+const NoteList = props => {
+  let notesList;
+  const { notes } = useContext(AppContext);
+  if (props.match.params.folderId) {
+    notesList = notes.filter(
+      note => note.folderId === props.match.params.folderId
     );
+  } else {
+    notesList = notes;
   }
-  
+
+  return (
+    <>
+      <ul className="note-list" >
+        {notesList.map(note => (
+          <Note
+            name={note.name}
+            id={note.id}
+            key={note.id}
+            modified={note.modified}
+          />
+        ))}
+      </ul>
+      <button>
+        <Link to="/add-note">Add Note</Link>
+      </button>
+    </>
+  );
+};
+
+NoteList.propTypes = {
+  notes: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      folderId: PropTypes.string.isRequired,
+      content: PropTypes.string
+    })
+  )
 };
 
 export default NoteList;

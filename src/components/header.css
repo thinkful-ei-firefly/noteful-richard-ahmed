@@ -7,11 +7,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 32px;
-  background-color: black;
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(to top, #96c6eb, #46a3e9, #02084f);
 }
 
 .header__link {
-  color: #fff;
+  color: white;
   text-decoration: none;
 }

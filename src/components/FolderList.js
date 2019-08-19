@@ -1,28 +1,33 @@
-import React from "react";
+import React, { useContext } from "react";
 import Folder from "./Folder";
-import AddFolder from './AddFolder'
-import UserContext from "./UserContext"
+import AppContext from "../context/AppContext";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
-class FolderList extends React.Component {
-  static contextType = UserContext;
-
-  render() {
-    const { folders } =this.context;
-    return ( 
-      <ul className="folder-list">
+const FolderList = props => {
+  const { folders } = useContext(AppContext);
+  return (
+    <div className="folder-list" >
+      <ul id="nav" >
         {folders.map(folder => (
           <Folder name={folder.name} id={folder.id} key={folder.id} />
         ))}
-        <UserContext.Provider value={{
-          setAddingFolder: this.context.setAddingFolder,
-          addingFolder: this.context.addingFolder,
-          handleCreateFolder: this.context.handleCreateFolder
-        }}>
-        <AddFolder />
-      </UserContext.Provider>
       </ul>
-    );
-  }
+      <button>
+        <Link to="/add-folder">Add Folder</Link>
+      </button>
+
+    </div>
+  );
+};
+
+FolderList.propTypes = {
+  folders: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    })
+  )
 };
 
 export default FolderList;

@@ -1,31 +1,34 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import AppContext from "../context/AppContext";
 import "./note.css";
-import UserContext from "./UserContext";
+import PropTypes from "prop-types";
 
-class Note extends React.Component {
+const Note = props => {
+  const date = new Date(props.modified).toLocaleDateString();
+  const { deleteNote } = useContext(AppContext);
+  return (
+    <li className="note-list-item">
+      <h3>
+        <Link className="note-list-item__link" to={`/notes/${props.id}`}>
+          {props.name}
+        </Link>
+      </h3>
+      <div className="note-list-modified-date">Date modified: {date}</div>
+      <button
+        className="note-list-item__button"
+        onClick={() => deleteNote(props.id)}
+      >
+        Delete
+      </button>
+    </li>
+  );
+};
+Note.propTypes = {
 
-  static contextType = UserContext;
-
-  date = new Date(this.props.modified).toLocaleDateString();
-  
-  render() {
-    // console.log(this.context)
-    return (
-      <li className="note-list-item">
-        <div className='note-box'>
-          <div className='filler'/>
-          <h3>
-            <Link className="note-list-item__link" to={`/notes/${this.props.id}`}>
-              {this.props.name}
-            </Link>
-          </h3>
-          <button className='delete' onClick={() => this.context.handleDelete(this.props.id)}>Delete</button>
-        </div>
-        <div>Date modified: {this.date}</div>
-      </li>
-    );
-  }
+  modified: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired
 };
 
 export default Note;

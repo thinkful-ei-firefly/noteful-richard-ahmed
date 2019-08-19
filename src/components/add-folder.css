@@ -1,0 +1,29 @@
+.submit-btn {
+    width: 100%;
+    /* height: 4rem; */
+    /* border: 1px solid black; */
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to left, #0a3a74, #62b3df, #0a3a74);
+    border-radius: 10px;
+    padding: 10%;
+    color: white;
+    border: #02084f solid 1px;
+}
+.add-form {
+    width: 100%;
+    /* height: 4rem; */
+    /* border: 1px solid black; */
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to left, #62b3df, #0a3a74, #62b3df);
+    border-radius: 10px;
+    padding: 10%;
+    color: white;
+    border: #02084f solid 1px;
+    margin-top: 2rem;
+}

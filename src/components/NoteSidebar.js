@@ -1,25 +1,34 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import UserContext from './UserContext'
+import AppContext from "../context/AppContext";
+import PropTypes from "prop-types";
 
-class NoteSidebar extends React.Component {
-  static contextType = UserContext;
+const NoteSidebar = ({ match: { params } }) => {
+  const { folders, notes } = useContext(AppContext);
+  const note = notes.find(note => note.id === params.noteId);
+  const folder = folders.find(folder => folder.id === note.folderId);
+  return (
+    <div>
+      <Link to={`/folders/${folder.id}`}>Go Back</Link>
+      <h2>{folder.name}</h2>
+    </div>
+  );
+};
 
-  // constructor(props, context) {
-  //   super(props)
-  //   this.note = context.notes.find(note => note.id === this.props.match.params.noteId);
-  //   this.folder = context.folders.find(folder => folder.id === this.note.folderId);
-  // }
-  note = this.context.notes.find(note => note.id === this.props.match.params.noteId);
-  folder = this.note ? this.context.folders.find(folder => folder.id === this.note.folderId) : false;
-  render() {
-    return (
-      <div>
-        <Link to={`/folders/${this.folder.id}`}>Go Back</Link>
-        <h2>{this.folder ? this.folder.name : ''}</h2>
-      </div>
-    )
-  }
-}
-
+NoteSidebar.propTypes = {
+  folders: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    })
+  ),
+  notes: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      folderId: PropTypes.string.isRequired,
+      content: PropTypes.string
+    })
+  )
+};
 export default NoteSidebar;

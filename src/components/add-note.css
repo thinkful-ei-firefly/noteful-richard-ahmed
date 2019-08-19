@@ -1,0 +1,29 @@
+.add-note-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+    /* padding: 0% 7% 7%; */
+    
+  /* background-color: red; */
+  
+}
+
+.add-note-form :only-child {
+  margin: 0% 0%;
+  /* border: red solid 1px; */
+  width: 100%;
+  border-radius: 5px;
+  
+  
+}
+
+.add-note-contaier {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-evenly;
+    color:white;
+    font-size: 150%;
+    padding: 0% 7% 7%;
+}
